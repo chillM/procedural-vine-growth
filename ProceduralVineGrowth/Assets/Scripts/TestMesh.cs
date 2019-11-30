@@ -19,6 +19,11 @@ public class TestMesh : MonoBehaviour
     }
 
     private void BuildMesh(List<CrossSection> sections) {
+        MeshFilter filter = gameObject.GetComponent<MeshFilter>();
+        Mesh mesh = filter.mesh;
+        mesh.Clear();
+
+
         Vector3[] vertices = new Vector3[sections.Count * numSides * 2];
         Vector3[] normals = new Vector3[vertices.Length];
         int vert = 0;
@@ -45,11 +50,29 @@ public class TestMesh : MonoBehaviour
                 tempList[j] += vert - 2*numSides; // adding where the previous cross section starts in the vertex array
             }
             triangles.AddRange(tempList); // add the new triangles to the list
-
-            // add the normals
-
         }
         // TODO add the cap on the end
+
+        //add normals
+        vert = 0;
+        for (int i = 0; i < sections.Count; i++)
+        {
+            //add the normals for that section
+            for(int n = 0; n < sections[i].normals.Length; n++) {
+                normals[vert++] = sections[i].normals[n];
+            }
+        }
+
+        // we should have vertices, triangles, and normals by now.
+        // faces are sharing some vertices right now
+
+        mesh.vertices = vertices;
+        mesh.normals = normals;
+        //mesh.uv = uvs;
+        mesh.triangles = triangles.ToArray();
+        
+        mesh.RecalculateBounds();
+        mesh.Optimize();
     }
 
     private void InsertElements(List<CrossSection> list) {

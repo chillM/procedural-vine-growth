@@ -28,7 +28,7 @@ public class CrossSection
         float _2pi = Mathf.PI * 2f;
 
         vertices = new Vector3[numSides*2];
-        int vert = 0;
+        int vert = 0; // goes through the vertices
 
         //first point
         vertices[0] = position + temp;
@@ -43,7 +43,16 @@ public class CrossSection
         vertices[vertices.Length-1] = vertices[0];
 
 
-        // TODO also include normal calculation
+        // normal calculation
+        normals = new Vector3[vertices.Length];
+        vert = 0;
+
+        for(;vert < normals.Length-1; vert+=2) {
+            //calculate the normal for one face at a time
+            Vector3 faceCenter = 0.5f * vertices[vert] + 0.5f * vertices[vert]; // get the center of the face
+            normals[vert] = faceCenter - position; // get the vector to the face center
+            normals[vert+1] = normals[vert];
+        }
     }
 
     /// <summary>
