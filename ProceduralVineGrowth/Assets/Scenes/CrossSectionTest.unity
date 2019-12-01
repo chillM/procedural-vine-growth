@@ -303,30 +303,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 639257310}
-  - component: {fileID: 639257309}
   - component: {fileID: 639257308}
-  - component: {fileID: 639257307}
   - component: {fileID: 639257311}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: ProceduralGeneration
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!65 &639257307
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 639257306}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &639257308
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -365,14 +350,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!33 &639257309
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 639257306}
-  m_Mesh: {fileID: 0}
 --- !u!4 &639257310
 Transform:
   m_ObjectHideFlags: 0
@@ -399,3 +376,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb9a99da6d309114a94cec7d0fa0467a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  numSides: 6

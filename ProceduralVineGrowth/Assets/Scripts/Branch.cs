@@ -11,7 +11,7 @@ public class CrossSection
     public Vector3[] normals { get; private set; }
     public bool changeOccurs;
 
-    CrossSection(Vector3 position, Vector3 normal, float radius) {
+    public CrossSection(Vector3 position, Vector3 normal, float radius) {
         this.position = position;
         this.normal = normal;
         this.radius = radius;
@@ -25,18 +25,21 @@ public class CrossSection
         Vector3 temp = Vector3.Angle(normal, Vector3.right) > 0.1f ? Vector3.Cross(normal, Vector3.right) : Vector3.Cross(normal, Vector3.forward);
         temp.Normalize();
         temp *= radius;
-        float _2pi = Mathf.PI * 2f;
+        //float _2pi = Mathf.PI * 2f; not using because angle axis uses degrees
 
         vertices = new Vector3[numSides*2];
-        int vert = 0; // goes through the vertices
+        int vert = 1; // goes through the vertices
 
         //first point
         vertices[0] = position + temp;
         //all other points (entered twice)
         for(int v = 1; v < numSides; v++) {
             //rotate the temp vector and get the point there
-            temp = Quaternion.AngleAxis(1/numSides * _2pi, normal) * temp; //rotate temp 1/numSides around the normal vector
+            temp = Quaternion.AngleAxis(360/numSides, normal) * temp; //rotate temp 1/numSides around the normal vector
+            //add the point twice
             vertices[vert++] = position + temp;
+            vertices[vert] = vertices[vert-1];
+            vert++;
 
         }
         //last point
@@ -63,6 +66,21 @@ public class CrossSection
     /// <returns>The triangle list that would result assuming prev was index 0 of the vertex array</returns>
     public static List<int> ConnectSections(CrossSection prev, CrossSection current) {
         List<int> triangles = new List<int>();
+        int stride = prev.vertices.Length;
+
+        // result is based only on number of sides right now
+        
+        // first triangle
+        triangles.AddRange(new int[] {1, stride, 0});
+
+        // add two triangles for all intermediary vertices
+        for(int i = 1; i < prev.vertices.Length-1; i++) {
+            triangles.AddRange(new int[] {stride+i, stride+i-1, i});
+            triangles.AddRange(new int[] {i+1, stride+i, i});
+        }
+
+        //last triangle
+        triangles.AddRange(new int[] {stride*2-1, stride*2-2, stride-1});
 
         return triangles;
     }

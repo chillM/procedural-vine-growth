@@ -6,8 +6,12 @@ public class TestMesh : MonoBehaviour
 {
     public int numSides = 4;
 
+    private MeshFilter filter;
+
     void Start()
     {
+        filter = gameObject.AddComponent<MeshFilter>();
+
         // test the cross section connection using a cube shape
         List<CrossSection> sections = new List<CrossSection>();
 
@@ -19,7 +23,6 @@ public class TestMesh : MonoBehaviour
     }
 
     private void BuildMesh(List<CrossSection> sections) {
-        MeshFilter filter = gameObject.GetComponent<MeshFilter>();
         Mesh mesh = filter.mesh;
         mesh.Clear();
 
@@ -46,8 +49,9 @@ public class TestMesh : MonoBehaviour
             // calculate the faces
             List<int> tempList = CrossSection.ConnectSections(sections[i-1], sections[i]);
             // adjust the triangle values returned
+            int modifier = (vert - (4*numSides)); // gets the triangles to align with the larger vertex array
             for(int j = 0; j < tempList.Count; j++) {
-                tempList[j] += vert - 2*numSides; // adding where the previous cross section starts in the vertex array
+                tempList[j] += modifier; // adding where the previous cross section starts in the vertex array
             }
             triangles.AddRange(tempList); // add the new triangles to the list
         }
@@ -76,6 +80,8 @@ public class TestMesh : MonoBehaviour
     }
 
     private void InsertElements(List<CrossSection> list) {
-
+        list.Add(new CrossSection(new Vector3(0,0,0), Vector3.up, 2f));
+        list.Add(new CrossSection(new Vector3(0,1,0), Vector3.up, 2f));
+        list.Add(new CrossSection(new Vector3(0,2,0), Vector3.up, 2f));
     }
 }
