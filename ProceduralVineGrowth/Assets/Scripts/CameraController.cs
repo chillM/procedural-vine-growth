@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour
     {
         //If this is not the editor (it's a build), if we don't want mouse control, or if VR is enabled then
         //destroy this script and exit
-        if (!Application.isEditor || !mouseControl || UnityEngine.XR.XRSettings.enabled)
+        if (!mouseControl || UnityEngine.XR.XRSettings.enabled)
         {
             Destroy(this);
             return;

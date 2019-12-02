@@ -53,7 +53,7 @@ public class Branch : MonoBehaviour
                 for(int j = i; j < crossSections.Count; j++) {
                     //shift them all in the i-1th cross section's normal direction
                     crossSections[j].position += crossSections[i-1].normal * vine.sectionLength / 6 * deltaTime; //get a third of the way in a second
-                    crossSections[j].position += crossSections[i].surfaceDirection * vine.sectionLength / 4 * crossSections[i].concavity * deltaTime; // move some towards the surface
+                    crossSections[j].position += crossSections[i].surfaceDirection * vine.sectionLength / 2 * crossSections[i].concavity * deltaTime; // move some towards the surface
                     // TODO change here to make sure you don't go over the max length
                 }
                 crossSections[i].changeOccurs = true;

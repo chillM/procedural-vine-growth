@@ -11,6 +11,7 @@ public class TestBranch : MonoBehaviour
     void Start()
     {
         cameraController.OnRaycastHit += CreateBranch; //subscribe to the event
+        Time.timeScale = 3f;
     }
 
     void Update()
