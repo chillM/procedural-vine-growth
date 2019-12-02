@@ -36,6 +36,14 @@ public class Branch : MonoBehaviour
     /// </summary>
     /// <param name="deltaTime">Controls how much change occurs</param>
     void UpdateBranch(float deltaTime) {
+        // check the first cross section
+        crossSections[0].changeOccurs = false;
+        if(crossSections[0].radius < vine.maxRadius) {
+            // increase the radius of the cross section
+            crossSections[0].radius += vine.maxRadius / 4 * deltaTime; // get a fourth of the radius in a second
+            crossSections[0].changeOccurs = true;
+        }
+
         for (int i = 1; i < crossSections.Count; i++)
         {
             crossSections[i].changeOccurs = false;
@@ -45,6 +53,7 @@ public class Branch : MonoBehaviour
                 for(int j = i; j < crossSections.Count; j++) {
                     //shift them all in the i-1th cross section's normal direction
                     crossSections[j].position += crossSections[i-1].normal * vine.sectionLength / 3 * deltaTime; //get a third of the way in a second
+                    // TODO change here to make sure you don't go over the max length
                 }
                 crossSections[i].changeOccurs = true;
             }
@@ -69,7 +78,7 @@ public class Branch : MonoBehaviour
         // check the last cross section to see if a new one needs to be created
         if(crossSections.Count > 1) {
             float distance = Vector3.Distance(crossSections[crossSections.Count - 1].position, crossSections[crossSections.Count - 2].position);
-            if(distance == vine.sectionLength) {
+            if(distance >= vine.sectionLength) {
                 GrowBranch();
             }
         }
@@ -140,6 +149,80 @@ public class Branch : MonoBehaviour
     /// This method will determine where the next cross section should go and place it
     /// </summary>
     void GrowBranch() {
+        CrossSection end = crossSections[crossSections.Count-1];
+        CrossSection newSection = new CrossSection(end.position + end.normal*vine.sectionLength/2, Vector3.up, vine.startRadius);
 
+        // get everything in world space
+        CrossSection.ConvertToWorldSpace(end, transform);
+        CrossSection.ConvertToWorldSpace(newSection, transform);
+
+        // decide which direction the closest surface is by using the end and shooting out rays in all directions
+        RaycastHit hit; // this will have the result of the closest raycast hit
+        Vector3 direction; // this will have the direction in which that ray went
+        
+        if(FindClosestSurface(out hit, out direction, end)) {
+
+            // get the normal for the new section
+            float offset = vine.sectionLength / 5;
+            Ray leftRay = new Ray(newSection.position + end.normal*offset, direction);
+            Ray rightRay = new Ray(newSection.position - end.normal*offset, direction);
+            RaycastHit leftHit, rightHit;
+
+            if(Physics.Raycast(leftRay, out leftHit, vine.maxRadius*2) && Physics.Raycast(rightRay, out rightHit, vine.maxRadius*2)) {
+                //both rays hit something, average the normals for the new cross section's normal
+                Vector3 avgNormal = leftHit.normal * 0.5f + rightHit.normal * 0.5f;
+                avgNormal.Normalize();
+
+                newSection.normal = end.normal - Vector3.Project(end.normal, avgNormal);
+                newSection.normal.Normalize();
+                newSection.CalculateVertices(vine.sides);
+                crossSections.Add(newSection); // we only add the new section if it has a surface to follow/attach to
+            }
+            // if both rays don't find a surface, then don't grow any more
+        }
+        // if we don't find a close surface then don't grow any more
+
+        // put everything back to local space
+        CrossSection.ConvertToLocalSpace(end, transform);
+        CrossSection.ConvertToLocalSpace(newSection, transform);
+    }
+
+    /// <summary>
+    /// This method takes a cross section with points calculated and finds the closest surface by sending raycasts in the
+    /// direction of each point in the cross section
+    /// </summary>
+    /// <param name="hit"></param>
+    /// <param name="section"></param>
+    /// <returns></returns>
+    bool FindClosestSurface(out RaycastHit hit, out Vector3 direction, CrossSection section) {
+        bool surfaceFound = false;
+        RaycastHit minHit;
+        float minDistance = Mathf.Infinity;
+        direction = Vector3.zero;
+
+        Ray ray = new Ray(section.vertices[0], section.vertices[0] - section.position);
+        if(Physics.Raycast(ray, out hit, vine.maxRadius)) {
+            minDistance =  hit.distance;
+            surfaceFound = true;
+            direction = section.vertices[0] - section.position;
+        }
+        minHit = hit;
+        
+
+        for(int i = 1; i < section.vertices.Length; i++) {
+            ray = new Ray(section.vertices[i], section.vertices[i] - section.position);
+            if(Physics.Raycast(ray, out hit, vine.maxRadius)) {
+                surfaceFound = true;
+                if(minDistance > hit.distance) {
+                    minDistance =  hit.distance;
+                    minHit = hit;
+                    direction = section.vertices[i] - section.position;
+                }
+            }
+            
+        }
+
+        hit = minHit;
+        return surfaceFound;
     }
 }

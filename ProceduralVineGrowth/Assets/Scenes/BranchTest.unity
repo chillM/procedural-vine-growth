@@ -845,9 +845,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ceafe9c9b72da646b51491cd9a719a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sectionLength: 0.5
-  startRadius: 0.2
-  maxRadius: 0.5
+  sectionLength: 0.1
+  startRadius: 0.05
+  maxRadius: 0.1
   sides: 6
 --- !u!1 &2008107392
 GameObject:

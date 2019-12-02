@@ -88,6 +88,6 @@ public class TestMesh : MonoBehaviour
 
         list.Add(new CrossSection(new Vector3(0,0,0), Vector3.up, 1f));
         list.Add(new CrossSection(new Vector3(0,1,1), new Vector3(0, 1f, 1f), 1f));
-        list.Add(new CrossSection(new Vector3(1,4,0), Vector3.up, 1f));
+        //list.Add(new CrossSection(new Vector3(1,4,0), Vector3.up, 1f));
     }
 }

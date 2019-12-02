@@ -84,4 +84,28 @@ public class CrossSection
 
         return triangles;
     }
+
+    public static void ConvertToWorldSpace(CrossSection section, Transform localTransform) {
+        section.position = localTransform.TransformPoint(section.position);
+        section.normal = localTransform.TransformDirection(section.normal);
+
+        if(section.vertices == null) return;
+
+        for(int i = 0; i < section.vertices.Length; i++) {
+            section.vertices[i] = localTransform.TransformPoint(section.vertices[i]);
+            section.normals[i] = localTransform.TransformDirection(section.normals[i]);
+        }
+    }
+
+    public static void ConvertToLocalSpace(CrossSection section, Transform localTransform) {
+        section.position = localTransform.InverseTransformPoint(section.position);
+        section.normal = localTransform.InverseTransformDirection(section.normal);
+
+        if(section.vertices == null) return;
+
+        for(int i = 0; i < section.vertices.Length; i++) {
+            section.vertices[i] = localTransform.InverseTransformPoint(section.vertices[i]);
+            section.normals[i] = localTransform.InverseTransformDirection(section.normals[i]);
+        }
+    }
 }
