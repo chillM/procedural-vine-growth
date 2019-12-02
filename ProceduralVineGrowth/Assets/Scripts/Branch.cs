@@ -164,13 +164,13 @@ public class Branch : MonoBehaviour
 
             // get the normal for the new section
             float offset = vine.sectionLength / 5;
-            Ray leftRay = new Ray(newSection.position + end.normal*offset, direction);
+            Ray leftRay = new Ray(newSection.position + end.normal*offset*4f, direction);
             Ray rightRay = new Ray(newSection.position - end.normal*offset, direction);
             RaycastHit leftHit, rightHit;
 
             if(Physics.Raycast(leftRay, out leftHit, vine.maxRadius*2) && Physics.Raycast(rightRay, out rightHit, vine.maxRadius*2)) {
                 //both rays hit something, average the normals for the new cross section's normal
-                Vector3 avgNormal = leftHit.normal * 0.5f + rightHit.normal * 0.5f;
+                Vector3 avgNormal = leftHit.normal * 0.6f + rightHit.normal * 0.4f;
                 avgNormal.Normalize();
 
                 newSection.normal = end.normal - Vector3.Project(end.normal, avgNormal);
