@@ -35,14 +35,18 @@ public class TestBranch : MonoBehaviour
         // create the first cross section at the hit location; translate the direction into local branch space
         Vector3 sectionNormal = Vector3.up - Vector3.Project(Vector3.up, hit.normal);
         CrossSection section = new CrossSection(Vector3.zero, sectionNormal, vine.startRadius);
+        section.surfaceDirection = branchObject.transform.InverseTransformPoint(hit.point) - section.position; //calculating surface direction in local space
         section.CalculateVertices(vine.sides);
+        section.concavity = 0f;
 
         // add the first cross section to the branch cross section list
         branch.addCrossSection(section);
 
         CrossSection section2 = new CrossSection(Vector3.zero, sectionNormal, vine.startRadius);
         section2.position += vine.sectionLength/2 * sectionNormal;
+        section2.surfaceDirection = section.surfaceDirection; // just give them the same direction
         section2.CalculateVertices(vine.sides);
+        section2.concavity = 0f;
         // add a second cross section
         branch.addCrossSection(section2);
     }

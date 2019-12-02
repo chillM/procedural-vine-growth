@@ -52,7 +52,8 @@ public class Branch : MonoBehaviour
                 // increase the distance of this cross section and all that follow it
                 for(int j = i; j < crossSections.Count; j++) {
                     //shift them all in the i-1th cross section's normal direction
-                    crossSections[j].position += crossSections[i-1].normal * vine.sectionLength / 3 * deltaTime; //get a third of the way in a second
+                    crossSections[j].position += crossSections[i-1].normal * vine.sectionLength / 6 * deltaTime; //get a third of the way in a second
+                    crossSections[j].position += crossSections[i].surfaceDirection * vine.sectionLength / 4 * crossSections[i].concavity * deltaTime; // move some towards the surface
                     // TODO change here to make sure you don't go over the max length
                 }
                 crossSections[i].changeOccurs = true;
@@ -162,19 +163,31 @@ public class Branch : MonoBehaviour
         
         if(FindClosestSurface(out hit, out direction, end)) {
 
+            newSection.surfaceDirection = direction;
             // get the normal for the new section
             float offset = vine.sectionLength / 5;
-            Ray leftRay = new Ray(newSection.position + end.normal*offset*4f, direction);
-            Ray rightRay = new Ray(newSection.position - end.normal*offset, direction);
-            RaycastHit leftHit, rightHit;
+            Ray aheadRay = new Ray(newSection.position + end.normal*offset*4f, direction);
+            Ray behindRay = new Ray(newSection.position - end.normal*offset, direction);
+            RaycastHit aheadHit, behindHit;
 
-            if(Physics.Raycast(leftRay, out leftHit, vine.maxRadius*2) && Physics.Raycast(rightRay, out rightHit, vine.maxRadius*2)) {
+            if(Physics.Raycast(aheadRay, out aheadHit, vine.maxRadius*2) && Physics.Raycast(behindRay, out behindHit, vine.maxRadius*2)) {
                 //both rays hit something, average the normals for the new cross section's normal
-                Vector3 avgNormal = leftHit.normal * 0.6f + rightHit.normal * 0.4f;
+                Vector3 avgNormal = aheadHit.normal * 0.6f + behindHit.normal * 0.4f;
                 avgNormal.Normalize();
 
                 newSection.normal = end.normal - Vector3.Project(end.normal, avgNormal);
                 newSection.normal.Normalize();
+
+                // check concavity
+                // move some amount in the surface normal direction for each ray
+                Vector3 posAhead = newSection.position + aheadHit.normal;
+                Vector3 posBehind = newSection.position + behindHit.normal;
+
+                float distAhead  = Vector3.Distance(posAhead, end.position);
+                float distBehind = Vector3.Distance(posBehind, end.position);
+
+                newSection.concavity = distBehind - distAhead;
+
                 newSection.CalculateVertices(vine.sides);
                 crossSections.Add(newSection); // we only add the new section if it has a surface to follow/attach to
             }

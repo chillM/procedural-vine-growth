@@ -10,6 +10,8 @@ public class CrossSection
     public Vector3[] vertices { get; private set; }
     public Vector3[] normals { get; private set; }
     public bool changeOccurs;
+    public Vector3 surfaceDirection; // the direction from the cross section position to the surface used for normal calculation
+    public float concavity; // a value that indicates how concave or convex the surface is; positive if concave
 
     public CrossSection(Vector3 position, Vector3 normal, float radius) {
         this.position = position;
@@ -100,6 +102,7 @@ public class CrossSection
     public static void ConvertToLocalSpace(CrossSection section, Transform localTransform) {
         section.position = localTransform.InverseTransformPoint(section.position);
         section.normal = localTransform.InverseTransformDirection(section.normal);
+        section.surfaceDirection = localTransform.InverseTransformDirection(section.surfaceDirection);
 
         if(section.vertices == null) return;
 
